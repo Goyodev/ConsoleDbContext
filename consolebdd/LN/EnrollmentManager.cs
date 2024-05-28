@@ -53,7 +53,7 @@ namespace consolebdd.LN
         {
             try
             {
-                if (enrollment is null) throw new Exception();
+                if (enrollment is null) throw new Exception("Su enrollment no es válido.");
 
                 context.Enrollments.Add(enrollment);
                 context.SaveChanges();

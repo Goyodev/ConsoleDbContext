@@ -59,7 +59,7 @@ namespace consolebdd.LN
         {
             try
             {
-                if (course is null) throw new Exception();
+                if (course is null) throw new Exception("Su curso no es válido.");
 
                 context.Courses.Add(course);
                 context.SaveChanges();

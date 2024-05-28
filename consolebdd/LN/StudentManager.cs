@@ -46,7 +46,7 @@ namespace consolebdd.LN
         {
             try
             {
-                if (student is null) throw new Exception();
+                if (student is null) throw new Exception("Su estudiante no es válido.");
 
                 context.Students.Add(student);
                 context.SaveChanges();
