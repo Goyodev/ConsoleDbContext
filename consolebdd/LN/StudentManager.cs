@@ -20,7 +20,8 @@ namespace consolebdd.LN
             switch (option)
             {
                 case "1":
-                    AddStudent(context);
+                    var student = GetStudent();
+                    AddStudent(student, context);
                     break;
                 case "2":
                     ListStudents(context);
@@ -30,8 +31,7 @@ namespace consolebdd.LN
                     break;
             }
         }
-
-        private static void AddStudent(SchoolContext context)
+        private static Student GetStudent()
         {
             Console.WriteLine("Ingrese el nombre del estudiante:");
             var firstName = Console.ReadLine();
@@ -39,9 +39,15 @@ namespace consolebdd.LN
             Console.WriteLine("Ingrese el apellido del estudiante:");
             var lastName = Console.ReadLine();
 
+            return new Student { FirstMidName = firstName, LastName = lastName, EnrollmentDate = DateTime.Now };
+        }
+
+        private static void AddStudent(Student? student, SchoolContext context)
+        {
             try
             {
-                var student = new Student { FirstMidName = firstName, LastName = lastName, EnrollmentDate = DateTime.Now };
+                if (student is null) throw new Exception();
+
                 context.Students.Add(student);
                 context.SaveChanges();
                 Console.WriteLine("Estudiante agregado exitosamente.");
@@ -49,14 +55,12 @@ namespace consolebdd.LN
             catch (Exception ex)
             {
                 Console.WriteLine("Ha ocurrido un error: " + ex);
-
             }
         }
 
         private static void ListStudents(SchoolContext context)
         {
-            var students = context.Students.ToList();
-            foreach (var student in students)
+            foreach (var student in context.Students)
             {
                 Console.WriteLine($"{student.Id}: {student.FullName}");
             }

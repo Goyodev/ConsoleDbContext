@@ -17,7 +17,8 @@ namespace consolebdd.LN
             switch (option)
             {
                 case "1":
-                    AddEnrollment(context);
+                    var enrollment = GetEnrollment();
+                    AddEnrollment(enrollment, context);
                     break;
                 case "2":
                     ListEnrollments(context);
@@ -28,24 +29,32 @@ namespace consolebdd.LN
             }
         }
 
-        private static void AddEnrollment(SchoolContext context)
+        private static Enrollment GetEnrollment()
         {
             Console.WriteLine("Ingrese el ID del curso:");
             if (!int.TryParse(Console.ReadLine(), out var courseId))
             {
                 Console.WriteLine("ID de curso no válido.");
-                return;
+                return null;
             }
 
             Console.WriteLine("Ingrese el ID del estudiante:");
             if (!int.TryParse(Console.ReadLine(), out var studentId))
             {
                 Console.WriteLine("ID de estudiante no válido.");
-                return;
+                return null;
             }
+
+            return new Enrollment { CourseId = courseId, StudentId = studentId };
+
+        }
+
+        private static void AddEnrollment(Enrollment? enrollment, SchoolContext context)
+        {
             try
             {
-                var enrollment = new Enrollment { CourseId = courseId, StudentId = studentId };
+                if (enrollment is null) throw new Exception();
+
                 context.Enrollments.Add(enrollment);
                 context.SaveChanges();
                 Console.WriteLine("Enrollment agregado exitosamente.");
@@ -60,7 +69,7 @@ namespace consolebdd.LN
 
         private static void ListEnrollments(SchoolContext context)
         {
-            var enrollments = context.Enrollments.Include(e => e.Course).Include(e => e.Student).ToList();
+            var enrollments = context.Enrollments.Include(e => e.Course).Include(e => e.Student);
             foreach (var enrollment in enrollments)
             {
                 Console.WriteLine($"{enrollment.Id}: Curso - {enrollment.Course?.Title}, Estudiante - {enrollment.Student?.FullName}, Nota - {enrollment.Grade}");

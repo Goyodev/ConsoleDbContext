@@ -21,7 +21,8 @@ namespace consolebdd.LN
             switch (option)
             {
                 case "1":
-                    AddCourse(context);
+                    var course = GetCourse();
+                    AddCourse(course, context);
                     break;
                 case "2":
                     ListCourses(context);
@@ -32,7 +33,7 @@ namespace consolebdd.LN
             }
         }
 
-        private static void AddCourse(SchoolContext context)
+        private static Course GetCourse()
         {
             Console.WriteLine("Ingrese el título del curso:");
             var title = Console.ReadLine();
@@ -41,19 +42,25 @@ namespace consolebdd.LN
             if (!int.TryParse(Console.ReadLine(), out var credits))
             {
                 Console.WriteLine("Créditos no válidos.");
-                return;
+                return null;
             }
 
             Console.WriteLine("Ingrese el Id de Departamento:");
             if (!int.TryParse(Console.ReadLine(), out var departmentId))
             {
                 Console.WriteLine("Id de departamento no valido.");
-                return;
+                return null;
             }
 
+            return new Course { Title = title, Credits = credits, DepartmentId = departmentId };
+        }
+
+        private static void AddCourse(Course? course, SchoolContext context)
+        {
             try
             {
-                var course = new Course { Title = title, Credits = credits, DepartmentId = departmentId };
+                if (course is null) throw new Exception();
+
                 context.Courses.Add(course);
                 context.SaveChanges();
                 Console.WriteLine("Curso agregado exitosamente.");
@@ -61,14 +68,12 @@ namespace consolebdd.LN
             catch (Exception ex)
             {
                 Console.WriteLine("Ha ocurrido un error: " + ex);
-
             }
         }
 
         private static void ListCourses(SchoolContext context)
         {
-            var courses = context.Courses.ToList();
-            foreach (var course in courses)
+            foreach (var course in context.Courses)
             {
                 Console.WriteLine($"{course.Id}: {course.Title} - {course.Credits} créditos");
             }
